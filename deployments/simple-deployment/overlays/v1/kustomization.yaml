@@ -1,0 +1,9 @@
+bases:
+- ../../base
+nameSuffix: -v1
+namespace: default
+commonLabels:
+  version: v1
+  app: echo-server
+resources:
+- destination-rule.yml

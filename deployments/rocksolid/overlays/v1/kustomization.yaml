@@ -1,0 +1,10 @@
+bases:
+- ../../base
+nameSuffix: -v1
+namespace: default
+commonLabels:
+  version: v1
+  app: rocksolid
+patchesStrategicMerge:
+- patch-destination-rule.yml
+- patch-deployment.yml

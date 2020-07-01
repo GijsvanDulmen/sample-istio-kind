@@ -1,0 +1,10 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: echo-server
+spec:
+    host: svc-echo-server-v5
+    subsets:
+    - name: v5
+      labels:
+        version: v5

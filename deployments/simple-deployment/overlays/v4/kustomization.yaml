@@ -1,0 +1,10 @@
+bases:
+- ../../base
+nameSuffix: -v4
+namespace: default
+commonLabels:
+  version: v4
+  app: faulty-server
+resources:
+- destination-rule.yml
+- virtualservice.yml

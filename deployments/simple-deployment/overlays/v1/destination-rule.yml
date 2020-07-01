@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: echo-server
+spec:
+    host: svc-echo-server-v1
+    trafficPolicy:
+        # TLS related settings for connections to the upstream service.
+        tls:
+            # Every service (or ingress) talking to this service will have mutual TLS!
+            # For free! :-)
+            mode: ISTIO_MUTUAL
+        connectionPool:
+          # limit the max connections to this host!
+          tcp:
+            maxConnections: 1
+          http:
+            http2MaxRequests: 1
+            maxRequestsPerConnection: 1
+        # circuitbreaker
+        outlierDetection:
+          consecutiveErrors: 7
+          interval: 5m
+          baseEjectionTime: 15m
+    subsets:
+    - name: v1
+      labels:
+        version: v1

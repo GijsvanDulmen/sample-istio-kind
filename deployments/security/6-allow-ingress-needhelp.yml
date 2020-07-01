@@ -1,0 +1,13 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: allow-ingress-needhelp
+spec:
+ selector:
+   matchLabels:
+     app: needhelp
+ action: ALLOW
+ rules:
+ - from:
+   - source:
+       namespaces: ["istio-system", "kube-system"]

@@ -1,0 +1,98 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Echo Server</title>
+    <meta name="author" content="Gijs van Dulmen">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 20px;
+            background-color: #EEE;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        h1 {
+            color: orange;
+            text-shadow: -1px -1px white, 1px 1px #333
+        }
+
+        table {
+            margin: 40px;
+            padding: 0;
+            margin: 0;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        table tr td:first-child {
+            width: 500px;
+            padding-right: 100px;
+        }
+
+        table th, table td {
+            padding: 0;
+            margin: 0;
+
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #333;
+        }
+
+        .header {
+            display: inline-block;
+            color: gray;
+            width: 300px;
+            text-transform: capitalize;
+            padding: 4px;
+            margin-bottom: 2px;
+            border: 1px solid #CCC;
+        }
+
+        .headervalue {
+            display: inline-block;
+            padding: 4px;
+            margin-bottom: 2px;
+            border: 1px solid #CCC;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <h1>Echo Server v1</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Host</td>
+                <td>$HOST</td>
+            </tr>
+            <tr>
+                <td>Uptime</td>
+                <td>$UPTIME</td>
+            </tr>
+            <tr>
+                <td>Call</td>
+                <td>$CALL</td>
+            </tr>
+            <tr>
+                <td>Headers</td>
+                <td>$HEADERS</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

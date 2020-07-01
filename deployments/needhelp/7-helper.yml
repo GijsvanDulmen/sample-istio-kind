@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helper-v1
+  namespace: default
+  labels:
+    app: helper
+    service: helper-v1
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8081
+    name: http
+  selector:
+    app: helper
+    version: v1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helper-v1
+  namespace: default
+  labels:
+    app: helper
+    version: v1
+spec:
+  # Cattle not pet's!
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: helper
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+      labels:
+        app: helper
+        version: v1
+    spec:
+      containers:
+      - name: helper
+        # image: gijsvandulmen/echoserver:latest
+        image: gijsvandulmen/repeater:latest
+        imagePullPolicy: Always
+        env:
+          - name: GO_TO
+            value: "http://api.ipify.org/"
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "100Mi"
+          limits:
+            cpu: "500m"
+            memory: "1000Mi"
+        ports:
+          # - containerPort: 8080
+          - containerPort: 8081
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 2
+        # env:
+      terminationGracePeriodSeconds: 5
+

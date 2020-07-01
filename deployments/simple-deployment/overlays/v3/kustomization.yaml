@@ -1,0 +1,10 @@
+bases:
+- ../../base
+nameSuffix: -v3
+namespace: default
+commonLabels:
+  version: v3
+  app: delayed-server
+resources:
+- destination-rule.yml
+- virtualservice.yml

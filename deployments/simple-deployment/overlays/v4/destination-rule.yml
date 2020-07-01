@@ -1,0 +1,10 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: faulty-server
+spec:
+    host: svc-echo-server-v4
+    subsets:
+    - name: v4
+      labels:
+        version: v4

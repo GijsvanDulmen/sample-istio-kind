@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+    name: echo-server
+spec:
+    host: svc-echo-server-v2
+    # This is set to default in namespace
+    # But could be changed per destination rule
+    # Alter with security.istio.io/v1beta1:PeerAuthentication
+    trafficPolicy:
+        tls:
+            mode: ISTIO_MUTUAL
+    subsets:
+    - name: v2
+      labels:
+        version: v2

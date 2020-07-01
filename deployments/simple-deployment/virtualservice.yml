@@ -1,0 +1,63 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: simple-deployment-vs
+  namespace: default
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - default-gateway
+  http:
+  # routing rules can define 50% to go to v1
+  # Traffic splitting over two services!
+  - match:
+    - uri:
+        prefix: "/normal"
+      ignoreUriCase: true
+    route:
+    - destination:
+        host: svc-echo-server-v1 # service name!
+        subset: v1
+      weight: 50 # 50%
+      headers:
+        request:
+          add:
+            VERSION: "THIS___IS___VERSION___1!"
+    - destination:
+        host: svc-echo-server-v2 # service name!
+        subset: v2
+      weight: 50 # 50%
+      headers:
+        request:
+          add:
+            VERSION: "THIS___IS___VERSION___2!"
+    # retry freeeellyyy
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+      retryOn: gateway-error,connect-failure,refused-stream
+    headers:
+      request:
+          add:
+              Always: "Yes!"
+  # Mirror traphic to version 2
+  - match:
+    - uri:
+        prefix: "/mirror"
+      ignoreUriCase: true
+    # routing rules can define 50% to go to v1
+    # Traffic splitting over two services!
+    route:
+    - destination:
+        host: svc-echo-server-v1 # service name!
+        subset: v1
+      weight: 100
+      headers:
+        request:
+          add:
+            MIRROR: "NONE"
+    mirror:
+      host: svc-echo-server-v5
+      subset: v5
+    mirror_percent: 100

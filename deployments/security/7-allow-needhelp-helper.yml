@@ -1,0 +1,20 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: allow-ingress-needhelper-helper
+spec:
+ selector:
+   matchLabels:
+     app: helper
+ action: ALLOW
+ # Anything inside the mesh can call this need help call, nothing else!
+ rules:
+ - from:
+   - source:
+      namespaces: ["default"]
+      # cluster.local/ns/<ns>/sa/<serviceaccount>
+      principals: ["cluster.local/ns/default/sa/needhelp-service-account"]
+   to:
+   - operation:
+       methods: ["GET"]
+       paths: ["/needhelp"]
