@@ -30,7 +30,7 @@ istioctl install \
     --set values.meshConfig.accessLogFile="/dev/stdout" \
     --set values.gateways.istio-ingressgateway.loadBalancerIP=127.0.0.100 \
     --set values.tracing.enabled=true \
-    --set values.kiali.enabled=true
+    --set values.kiali.enabled=true \
     --set values.global.jwtPolicy=first-party-jwt
 
 # enable injection on default
