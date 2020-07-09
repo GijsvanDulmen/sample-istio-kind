@@ -18,7 +18,7 @@ echo $(kubectl get secrets -o jsonpath="{.items[?(@.metadata.annotations['kubern
 sleep 10
 
 # download istio
-# curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.6.3 sh -
+curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.6.3 sh -
 export PATH=$PWD/istio-1.6.3/bin:$PATH
 
 kubectl create namespace istio-system
