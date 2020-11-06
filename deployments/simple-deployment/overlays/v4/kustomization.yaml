@@ -7,4 +7,3 @@ commonLabels:
   app: faulty-server
 resources:
 - destination-rule.yml
-- virtualservice.yml
