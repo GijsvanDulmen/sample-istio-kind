@@ -57,10 +57,6 @@ sleep 10
 # already on by default on 1.7.4
 # kubectl get configmap istio -n istio-system -o yaml | sed 's/enableAutoMtls: false/enableAutoMtls: true/g' | kubectl replace -n istio-system -f -
 
-# Install metallb
-# kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
-# kubectl create -f ./metallb-config.yaml
-
 # Open up something
 cd ../deployments
 ./install.sh

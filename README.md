@@ -7,8 +7,3 @@ Install:
 
 Instructions:
 - Build the images in the images folder
-
-TODO:
-- Use metallb for load balancing
-- Configure metallb so you can reach it on localhost
-- Use skaffold with local kind
