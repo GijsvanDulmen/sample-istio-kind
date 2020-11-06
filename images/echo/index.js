@@ -18,6 +18,10 @@ app.all('/*', (req, res) => {
     });
     str = str.replace('\$HEADERS', headers);
 
+    // remote address
+    str = str.replace('\$REMOTEADDR', req.connection.remoteAddress);
+    str = str.replace('\$SOCKADDR', req.socket.remoteAddress);
+
     // host
     str = str.replace('\$HOST', os.hostname());
     str = str.replace('\$UPTIME', os.uptime());
