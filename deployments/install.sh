@@ -15,4 +15,4 @@ kubectl -n default apply -f ./security
 
 while ! kubectl wait --for=condition=available --timeout=600s deployment/echo-server-v1 -n default; do sleep 1; done
 
-# ./run.sh
+./run.sh
