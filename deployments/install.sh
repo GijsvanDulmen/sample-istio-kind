@@ -1,5 +1,6 @@
 #!/bin/bash
 kubectl -n default apply -f ./gateway.yml
+kubectl -n default apply -f ./virtualservice.yml
 
 cd simple-deployment
 ./install.sh

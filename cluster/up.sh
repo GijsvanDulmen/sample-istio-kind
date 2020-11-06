@@ -9,29 +9,37 @@ kubectl cluster-info --context kind-kind01
 kubectl get pods --all-namespaces
 
 # OPTIONAL: install dashboard
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
-kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --serviceaccount=default:default
-echo "Use following token for k8s dashboard"
-echo $(kubectl get secrets -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='default')].data.token}"|base64 --decode)
-
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+# kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --serviceaccount=default:default
+# echo "Use following token for k8s dashboard"
+# echo $(kubectl get secrets -o jsonpath="{.items[?(@.metadata.annotations['kubernetes\.io/service-account\.name']=='default')].data.token}"|base64 --decode)
 # sleep a bit
-sleep 10
+# sleep 10
 
-# download istio
-curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.6.3 sh -
-export PATH=$PWD/istio-1.6.3/bin:$PATH
+# download istio if not already downloaded
+if [ ! -d "./istio-1.7.4" ] 
+then
+    curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.7.4 sh -
+fi
+export PATH=$PWD/istio-1.7.4/bin:$PATH
 
 kubectl create namespace istio-system
 kubectl apply -f kiali-secret.yml
 
 # install istio
-istioctl install \
-    --set values.meshConfig.outboundTrafficPolicy.mode=REGISTRY_ONLY \
-    --set values.meshConfig.accessLogFile="/dev/stdout" \
-    --set values.gateways.istio-ingressgateway.loadBalancerIP=127.0.0.100 \
-    --set values.tracing.enabled=true \
-    --set values.kiali.enabled=true \
-    --set values.global.jwtPolicy=first-party-jwt
+istioctl operator init
+
+kubectl apply -f istio.yml
+
+# install prometheus
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/prometheus.yaml
+
+sleep 5
+
+# install kiali 1.26 (relatively latest)
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/kiali.yaml
+
+sleep 5
 
 # enable injection on default
 kubectl label namespace default istio-injection=enabled
@@ -39,11 +47,12 @@ kubectl label namespace default istio-injection=enabled
 sleep 10
 
 # make sure TLS is on by default
-kubectl get configmap istio -n istio-system -o yaml | sed 's/enableAutoMtls: false/enableAutoMtls: true/g' | kubectl replace -n istio-system -f -
+# already on by default on 1.7.4
+# kubectl get configmap istio -n istio-system -o yaml | sed 's/enableAutoMtls: false/enableAutoMtls: true/g' | kubectl replace -n istio-system -f -
 
 # Install metallb
-kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
-kubectl create -f ./metallb-config.yaml
+# kubectl apply -f https://raw.githubusercontent.com/google/metallb/v0.8.1/manifests/metallb.yaml
+# kubectl create -f ./metallb-config.yaml
 
 # Open up something
 cd ../deployments
