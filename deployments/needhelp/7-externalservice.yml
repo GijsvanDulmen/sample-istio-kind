@@ -11,45 +11,139 @@ spec:
   ports:
   - number: 443
     name: https
-    protocol: TLS
-  - name: http
-    number: 80
-    protocol: HTTP
-  resolution: NONE
+    protocol: HTTPS
+  resolution: DNS
 ---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: istio-egressgateway-for-api-ipify-org
+  namespace: default
+spec:
+  selector:
+    istio: egressgateway
+  servers:
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    hosts:
+    - api.ipify.org
+    tls:
+      mode: ISTIO_MUTUAL
+---
+# send external service to egress
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: ipify-routing
+  name: "http-to-egress"
   namespace: default
 spec:
   hosts:
   - api.ipify.org
-  #gateways:
-  #- mesh
+  gateways:
+  - mesh
   http:
-  - name: "redirect"
+  - match:
+    - gateways:
+      - mesh
+      port: 80
+    route:
+    - destination:
+        host: istio-egressgateway.istio-system.svc.cluster.local
+        subset: api-ipify-org
+        port:
+          number: 443
+      weight: 100
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: dr-egressgateway-for-api-ipify-org
+  namespace: default
+spec:
+  host: istio-egressgateway.istio-system.svc.cluster.local
+  subsets:
+  - name: api-ipify-org
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
+      portLevelSettings:
+      - port:
+          number: 443
+        tls:
+          mode: ISTIO_MUTUAL
+          sni: api.ipify.org
+---
+# on the egress do the following
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: http-tls-origination
+  namespace: default
+spec:
+  hosts:
+  - api.ipify.org
+  gateways:
+  - istio-egressgateway-for-api-ipify-org
+  http:
+  # the following is ordered explicitely!
+  # ECMAscript regex tool: https://regex101.com/
+  - name: "match-everything"
     rewrite:
       uri: "/"
     route:
     - destination:
         host: api.ipify.org
+        subset: tls-origination
+        port:
+          number: 443
+      weight: 100
+    # external service is slowwww
+    timeout: 30s
+    retries:
+      attempts: 2
+      perTryTimeout: 30s
+      # gateway-error = 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout
+      retryOn: gateway-error,connect-failure,reset,refused-stream
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: dr-ipify
+  name: originate-tls-for-api-ipify-org
+  namespace: default
 spec:
   host: api.ipify.org
-  # trafficPolicy:
-  #   connectionPool:
-  #     tcp:
-  #       maxConnections: 10
-  #     http:
-  #       http2MaxRequests: 10
-  #       maxRequestsPerConnection: 2
-  #   # circuitbreaker
-  #   outlierDetection:
-  #     consecutiveErrors: 7
-  #     interval: 5m
-  #     baseEjectionTime: 15m
+  subsets:
+  - name: tls-origination
+    trafficPolicy:
+      loadBalancer:
+        simple: ROUND_ROBIN
+      portLevelSettings:
+      - port:
+          number: 443
+        tls:
+          mode: SIMPLE
+          sni: api.ipify.org
+          
+          # Example with mutual TLS - And mounted secrets
+          # mode: MUTUAL
+          
+          # clientCertificate: /etc/api-ipify-org-certs/tls.crt
+          # privateKey: /etc/api-ipify-org-certs/tls.key
+
+          # Or example with SDS - Kubernetes TLS Secret
+          # credentialName: api-ipify-org-certs
+
+      # limit the number of connections
+      connectionPool:
+        tcp:
+          maxConnections: 10
+        http:
+          http2MaxRequests: 10
+          maxRequestsPerConnection: 2
+      # circuitbreaker
+      outlierDetection:
+        consecutiveErrors: 7
+        interval: 5m
+        baseEjectionTime: 15m
