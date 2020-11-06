@@ -18,7 +18,34 @@ spec:
     ingressGateways:
     - name: istio-ingressgateway
       k8s:
+        hpaSpec:
+          maxReplicas: 1
+        nodeSelector:
+          ingress-ready: "true"
         service:
-          loadBalancerIP: 127.0.0.100
-  #values:
-  #  jwtPolicy: first-party-jwt
+          type: NodePort
+        overlays:
+        - apiVersion: v1
+          kind: Service
+          name: istio-ingressgateway
+          patches:
+          - path: spec.ports
+            value:
+            - name: status-port
+              port: 15021
+              targetPort: 15021
+              nodePort: 30002
+            - name: http2
+              port: 80
+              targetPort: 8080
+              nodePort: 30000
+            - name: https
+              port: 443
+              targetPort: 8443
+              nodePort: 30001
+        - apiVersion: policy/v1beta1
+          kind: PodDisruptionBudget
+          name: istio-ingressgateway
+          patches:
+          - path: spec.minAvailable
+            value: 0

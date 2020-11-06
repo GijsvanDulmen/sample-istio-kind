@@ -43,6 +43,9 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/sampl
 # wait for kiali to be running
 while ! kubectl wait --for=condition=available --timeout=600s deployment/kiali -n istio-system; do sleep 1; done
 
+# patch
+kubectl -n istio-system patch svc kiali --patch '{"spec": { "type": "NodePort", "ports": [ { "name": "http", "nodePort": 30123, "port": 20001, "protocol": "TCP", "targetPort": 20001 }, { "name": "http-metrics", "nodePort": 30333, "port": 9090, "protocol": "TCP", "targetPort": 9090 } ] } }'
+
 sleep 5
 
 # enable injection on default

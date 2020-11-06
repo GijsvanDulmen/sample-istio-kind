@@ -1,7 +1,7 @@
 const request = require('request');
 
 setInterval(() => {
-    const base = "http://localhost:8080";
+    const base = "http://localhost";
 
     const list = ["rocksolid", "normal", "needhelp", "mirror", "delay", "abort"];
 
