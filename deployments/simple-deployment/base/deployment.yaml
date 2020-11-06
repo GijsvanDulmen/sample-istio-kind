@@ -40,7 +40,7 @@ spec:
             path: /live
             port: 8080
           initialDelaySeconds: 10
-          periodSeconds: 60
+          periodSeconds: 600
           timeoutSeconds: 5
           failureThreshold: 5
         readinessProbe:
