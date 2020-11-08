@@ -3,7 +3,7 @@ const request = require('request');
 setInterval(() => {
     const base = "http://localhost";
 
-    const list = ["rocksolid", "normal", "needhelp", "mirror", "delay", "abort"];
+    const list = ["rocksolid", "normal", "needhelp", "mirror", "delay", "abort", "canary"];
 
     list.forEach(i => {
         const url = base + "/" + i;

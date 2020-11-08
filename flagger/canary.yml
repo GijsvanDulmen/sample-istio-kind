@@ -1,0 +1,38 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: canary
+  namespace: default
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: canary
+  service:
+    port: 8082
+    match:
+      - uri:
+          prefix: "/canary"
+    gateways:
+    - default-gateway.default.svc.cluster.local
+    hosts:
+    - "*"
+  analysis:
+    interval: 10s
+    threshold: 10
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+      - name: request-success-rate
+        thresholdRange:
+          min: 99
+        interval: 1m
+      - name: request-duration
+        thresholdRange:
+          max: 500
+        interval: 1m
+    # webhooks:
+    #   - name: load-test
+    #     url: http://flagger-loadtester.test/
+    #     metadata:
+    #       cmd: "hey -z 1m -q 10 -c 2 http://podinfo-canary.test:9898/"

@@ -48,10 +48,17 @@ kubectl -n istio-system patch svc kiali --patch '{"spec": { "type": "NodePort", 
 
 sleep 5
 
+# Install flagger
+kubectl apply -k github.com/weaveworks/flagger//kustomize/istio
+
 # enable injection on default
 kubectl label namespace default istio-injection=enabled
 
 sleep 10
+
+# install flagger stuff
+kubectl apply -f ../flagger/deployment.yml
+kubectl apply -f ../flagger/canary.yml
 
 # make sure TLS is on by default
 # already on by default on 1.7.4

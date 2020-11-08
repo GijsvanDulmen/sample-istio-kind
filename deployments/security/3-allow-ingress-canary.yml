@@ -1,0 +1,27 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: allow-ingress-canary
+spec:
+ selector:
+   matchLabels:
+     app: canary-example
+ action: ALLOW
+ rules:
+ - from:
+   - source:
+       namespaces: ["istio-system", "kube-system"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: allow-ingress-canary-primary
+spec:
+ selector:
+   matchLabels:
+     app: canary-example-primary
+ action: ALLOW
+ rules:
+ - from:
+   - source:
+       namespaces: ["istio-system", "kube-system"]
