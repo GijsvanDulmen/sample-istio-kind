@@ -6,6 +6,7 @@ COPY package.json /usr/src/app/
 RUN npm install --loglevel verbose --production
 
 COPY index.js /usr/src/app/
+COPY template.html /usr/src/app/
 
 EXPOSE 8082
 
