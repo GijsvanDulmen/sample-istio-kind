@@ -104,11 +104,14 @@ spec:
     - uri:
         prefix: "/delay"
       ignoreUriCase: true
+    # Introduce a fixed delay to test applications
+    # behaviour with slow endpoints
     fault:
       delay:
         fixedDelay: 7s
         percentage:
           value: 100
+    # Add a header
     headers:
       request:
           add:

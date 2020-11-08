@@ -1,0 +1,37 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: "corporate-proxy"
+spec:
+  hosts:
+  - corporate-proxy.eu
+  gateways:
+  - "default-gateway"
+  http:
+  # ECMAscript regex tool: https://regex101.com/
+  - name: "match-slow-endpoint"
+    match:
+      - uri:
+          regex: \/sap\/opu\/odata\/sap\/ZERP_UTILITIES_UMC_SRV\/AccountAddresses\/.*
+        ignoreUriCase: true
+    route:
+    - destination: &routeTo
+        host: corporate-proxy.eu
+        subset: all
+        port:
+          number: 443
+      weight: 100
+    timeout: 30s # slow endpoint ... use some larger timeout
+    retries:
+      attempts: 2
+      perTryTimeout: 30s
+      # gateway-error = 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout
+      retryOn: gateway-error,connect-failure,reset,refused-stream
+  - name: "match-all-others"
+    route: *routeTo
+    timeout: 10s # normal timeout should be sufficient for all others
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      # gateway-error = 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout
+      retryOn: gateway-error,connect-failure,reset,refused-stream

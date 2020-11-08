@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: request-alteration
+spec:
+  hosts:
+  - corporate-proxy.eu
+  gateways:
+  - "default-gateway"
+  http:
+  - match:
+    - uri:
+        prefix: "/old-authorization-path"
+      ignoreUriCase: true
+    # Evil security token insertion?
+    headers:
+      request:
+          add:
+              Authorization: "Bearer 1235678"
