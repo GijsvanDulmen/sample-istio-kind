@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: secure-v1
+  namespace: default
+  labels:
+    app: secure
+    service: secure-v1
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  selector:
+    app: secure
+    version: v1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-v1
+  namespace: default
+  labels:
+    app: secure
+    version: v1
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: secure
+      version: v1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/extraStatTags: request_method,request_path
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/scheme: "http"
+        prometheus.io/path: "/metrics"
+        kiali.io/runtimes: nodejs
+      labels:
+        app: secure
+        version: v1
+    spec:
+      containers:
+      - name: secure
+        image: gijsvandulmen/echoserver:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "100Mi"
+          limits:
+            cpu: "500m"
+            memory: "1000Mi"
+        ports:
+          - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /live
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 600
+          timeoutSeconds: 5
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 2
+        # env:
+      terminationGracePeriodSeconds: 5
+

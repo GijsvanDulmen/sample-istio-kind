@@ -120,3 +120,10 @@ spec:
     - destination:
         host: svc-echo-server-v3 # service name!
         subset: v3
+  - match:
+    - uri:
+        prefix: "/secure"
+      ignoreUriCase: true
+    route:
+    - destination:
+        host: secure-v1
