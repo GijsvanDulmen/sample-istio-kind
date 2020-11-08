@@ -1,7 +1,7 @@
 #!/bin/sh
 echo ""
 echo "BEARER TOKEN: "
-TOKEN=$(cat jwt-with-groups.txt) && echo "$TOKEN" | cut -d '.' -f2 - | base64 --decode -
+TOKEN=$(cat jwt-without-groups.txt) && echo "$TOKEN" | cut -d '.' -f2 - | base64 --decode -
 
 echo ""
 echo ""
