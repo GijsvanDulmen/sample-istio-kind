@@ -4,9 +4,17 @@ const os = require('os');
 const fs = require('fs');
 const morgan = require('morgan')
 
+const client = require('prom-client');
+client.collectDefaultMetrics();
+
 app.use(morgan('combined'));
 app.get('/live', (req, res) => res.send("OK"));
 app.get('/ready', (req, res) => res.send("OK"));
+
+app.get('/metrics', (request, response) => {
+  response.set('Content-Type', client.register.contentType);
+  response.send(client.register.metrics());
+});
 
 app.all('/*', (req, res) => {
     let str = fs.readFileSync('./template.html').toString();

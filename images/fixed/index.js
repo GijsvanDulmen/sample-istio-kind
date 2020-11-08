@@ -3,9 +3,17 @@ const app = express();
 const morgan = require('morgan')
 const fs = require('fs');
 
+const client = require('prom-client');
+client.collectDefaultMetrics();
+
 app.use(morgan('combined'));
 app.get('/live', (req, res) => res.send("OK"));
 app.get('/ready', (req, res) => res.send("OK"));
+
+app.get('/metrics', (request, response) => {
+  response.set('Content-Type', client.register.contentType);
+  response.send(client.register.metrics());
+});
 
 app.all('/*', (req, res) => {
     const statusCode = process.env.STATUS_CODE ? process.env.STATUS_CODE : "500";

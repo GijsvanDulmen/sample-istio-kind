@@ -45,6 +45,12 @@ spec:
     metadata:
       annotations:
         sidecar.istio.io/inject: "true"
+        sidecar.istio.io/extraStatTags: request_method,request_path
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/scheme: "http"
+        prometheus.io/path: "/metrics"
+        kiali.io/runtimes: nodejs
       labels:
         app: needhelp
         version: v1

@@ -49,3 +49,33 @@ spec:
           patches:
           - path: spec.minAvailable
             value: 0
+  values:
+    telemetry:
+      v2:
+        prometheus:
+          configOverride:
+            inboundSidecar:
+              debug: false
+              stat_prefix: istio
+              metrics:
+                - name: requests_total
+                  dimensions:
+                    request_method: request.method
+                    request_path: request.url_path
+            outboundSidecar:
+              debug: false
+              stat_prefix: istio
+              metrics:
+                - name: requests_total
+                  dimensions:
+                    request_method: request.method
+                    request_path: request.url_path
+            gateway:
+              debug: false
+              stat_prefix: istio
+              disable_host_header_fallback: true
+              metrics:
+                - name: requests_total
+                  dimensions:
+                    request_method: request.method
+                    request_path: request.url_path

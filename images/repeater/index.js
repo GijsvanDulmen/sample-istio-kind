@@ -4,10 +4,17 @@ const app = express();
 const morgan = require('morgan')
 const request = require('request');
 
+const client = require('prom-client');
+client.collectDefaultMetrics();
+
 app.use(morgan('combined'));
 app.get('/live', (req, res) => res.send("OK"));
 app.get('/ready', (req, res) => res.send("OK"));
 
+app.get('/metrics', (request, response) => {
+  response.set('Content-Type', client.register.contentType);
+  response.send(client.register.metrics());
+});
 
 if ( process.env.PROXY_TO != undefined ) {
     console.log("Proxy to " + process.env.PROXY_TO);
