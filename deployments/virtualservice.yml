@@ -102,7 +102,7 @@ spec:
     - destination:
         host: svc-echo-server-v4 # service name!
         subset: v4
-  # Add delayys
+  # Add delays
   - match:
     - uri:
         prefix: "/delay"
