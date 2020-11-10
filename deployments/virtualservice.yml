@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   hosts:
-  - "*"
+  - "*" # normally: api.corporate.com
   gateways:
   - default-gateway
   http:
@@ -34,32 +34,40 @@ spec:
         subset: v2
       weight: 50
   # Header alteration
+  # Could be used as a simple feature toggle mechanism
+  # No need for feature toggle frameworks in your code
+  # Just use a certain header value!
   - match:
     - uri:
         prefix: "/normal"
       ignoreUriCase: true
     route:
     - destination:
-        host: svc-echo-server-v1 # service name!
+        host: svc-echo-server-v1
         subset: v1
-      weight: 50 # 50%
+      weight: 50 # percent
       headers:
         request:
           add:
             VERSION: "THIS___IS___VERSION___1!"
     - destination:
-        host: svc-echo-server-v2 # service name!
+        host: svc-echo-server-v2
         subset: v2
-      weight: 50 # 50%
+      weight: 50 # percent
       headers:
         request:
           add:
             VERSION: "THIS___IS___VERSION___2!"
-    # retry freeeellyyy
+    # retry 3 times and each attempt can only take 2 seconds
+    # but don't
     retries:
       attempts: 3
       perTryTimeout: 2s
-      retryOn: gateway-error,connect-failure,refused-stream
+      # retriable-4xx = 409
+      # gateway-error = 502, 503, or 504.
+      # reset = disconnect/reset/read timeout
+      # connect-failure = tcp connect error (not http request)
+      retryOn: gateway-error,connect-failure,refused-stream,reset,retriable-4xx
     headers:
       request:
           add:
@@ -73,23 +81,23 @@ spec:
     # Traffic splitting over two services!
     route:
     - destination:
-        host: svc-echo-server-v1 # service name!
+        host: svc-echo-server-v1
         subset: v1
       weight: 100
       headers:
         request:
           add:
             MIRROR: "NONE"
-    mirror:
+    mirror: ######
       host: svc-echo-server-v5
       subset: v5
-    mirror_percent: 100
+    mirror_percent: 100 #### Gimme everything!
   # Introduce faults!
   - match:
     - uri:
         prefix: "/abort"
       ignoreUriCase: true
-    fault:
+    fault: #######
       abort:
        httpStatus: 500
        percentage:
@@ -100,7 +108,7 @@ spec:
               Fault: "ABORT"
     route:
     - destination:
-        host: svc-echo-server-v4 # service name!
+        host: svc-echo-server-v4
         subset: v4
   # Add delays
   - match:
@@ -121,7 +129,7 @@ spec:
               Fault: "DELAY"
     route:
     - destination:
-        host: svc-echo-server-v3 # service name!
+        host: svc-echo-server-v3
         subset: v3
   # Secure destination
   - match:
