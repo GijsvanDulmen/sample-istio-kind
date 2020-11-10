@@ -2,6 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
  name: allow-ingress-canary
+ namespace: default
 spec:
  selector:
    matchLabels:
@@ -16,6 +17,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
  name: allow-ingress-canary-primary
+ namespace: default
 spec:
  selector:
    matchLabels:
