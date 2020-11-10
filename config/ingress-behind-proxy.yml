@@ -1,0 +1,26 @@
+# Example of having Istio ingress gateway being behind another ingress proxy
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: ingressgateway-settings
+  namespace: default
+spec:
+  configPatches:
+    - applyTo: NETWORK_FILTER
+      match:
+        context: GATEWAY
+        listener:
+          filterChain:
+            filter:
+              name: envoy.http_connection_manager
+      patch:
+        operation: MERGE
+        value:
+          typed_config:
+            '@type': >-
+              type.googleapis.com/envoy.config.filter.network.http_connection_manager.v2.HttpConnectionManager
+            use_remote_address: false
+            xff_num_trusted_hops: 2
+  workloadSelector:
+    labels:
+      istio: ingressgateway
