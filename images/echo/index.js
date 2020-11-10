@@ -22,7 +22,7 @@ app.all('/*', (req, res) => {
     // headers
     let headers = '';
     Object.keys(req.headers).forEach(k => {
-        headers += "<span class='header'>"+k+"</span>: <span class='headervalue'>" + req.headers[k] + "</span></br>";
+        headers += "<tr><td>"+k+"</td><td>" + req.headers[k] + "</td></tr>";
     });
     str = str.replace('\$HEADERS', headers);
 

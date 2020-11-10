@@ -12,13 +12,23 @@
         body, html {
             margin: 0;
             padding: 20px;
-            background-color: #EEE;
+            padding-top: 0;
+            background-color: orange;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
         }
 
         h1 {
             color: orange;
-            text-shadow: -1px -1px white, 1px 1px #333
+            background-color: #FFF;
+            border-radius: 10px;
+            padding: 20px;
+            font-size: 18px;
+        }
+
+        .container {
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #FFF;
         }
 
         table {
@@ -40,26 +50,19 @@
 
             text-align: left;
             padding: 10px;
-            border: 1px solid #333;
+            border: 1px solid #EEE;
+            font-size: 15px;
         }
-
-        .header {
-            display: inline-block;
-            color: gray;
-            width: 300px;
+        
+        table tr td:first-child {
+            color: #888;
             text-transform: capitalize;
-            padding: 4px;
-            margin-bottom: 2px;
-            border: 1px solid #CCC;
         }
 
-        .headervalue {
-            display: inline-block;
-            padding: 4px;
-            margin-bottom: 2px;
-            border: 1px solid #CCC;
+        table thead {
+            background: #EEE;
+            color: #AAA;
         }
-
 
     </style>
 </head>
@@ -67,40 +70,46 @@
 <body>
     <h1>Echo Server v1</h1>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Host</td>
-                <td>$HOST</td>
-            </tr>
-            <tr>
-                <td>RemoteAddress</td>
-                <td>$REMOTEADDR</td>
-            </tr>
-            <tr>
-                <td>Socket Address</td>
-                <td>$SOCKADDR</td>
-            </tr>
-            <tr>
-                <td>Uptime</td>
-                <td>$UPTIME</td>
-            </tr>
-            <tr>
-                <td>Call</td>
-                <td>$CALL</td>
-            </tr>
-            <tr>
-                <td>Headers</td>
-                <td>$HEADERS</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Host</td>
+                    <td>$HOST</td>
+                </tr>
+                <tr>
+                    <td>RemoteAddress</td>
+                    <td>$REMOTEADDR</td>
+                </tr>
+                <tr>
+                    <td>Socket Address</td>
+                    <td>$SOCKADDR</td>
+                </tr>
+                <tr>
+                    <td>Uptime</td>
+                    <td>$UPTIME</td>
+                </tr>
+                <tr>
+                    <td>Call</td>
+                    <td>$CALL</td>
+                </tr>
+            </tbody>
+            <thead>
+                <tr>
+                    <th colspan="2">Headers</th>
+                </tr>
+            </thead>
+            <tbody>
+                $HEADERS
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>
