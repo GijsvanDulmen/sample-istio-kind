@@ -1,2 +1,2 @@
 #!/bin/sh
-curl "http://localhost/secure" -v -H "Authorization: Bearer invalidToken"
+curl "http://localhost/secure" -v -o /dev/null -H "Authorization: Bearer invalidToken"
