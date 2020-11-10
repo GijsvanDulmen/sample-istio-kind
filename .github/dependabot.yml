@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # nodejs
+  - package-ecosystem: "npm"
+    directory: "/images/echo"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/images/fixed"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/images/proxy"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/images/repeater"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/traphic-generator/"
+    schedule:
+      interval: "daily"
+
+  # dockers
+  - package-ecosystem: "docker"
+    directory: "/images/echo"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/images/fixed"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/images/proxy"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/images/repeater"
+    schedule:
+      interval: "daily"
