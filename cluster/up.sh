@@ -26,35 +26,38 @@ export PATH=$PWD/istio-1.7.4/bin:$PATH
 kubectl create namespace istio-system
 kubectl apply -f kiali-secret.yml
 
-# install istio
+echo "Installing Istio Operator"
 istioctl operator init
+kubectl -n istio-operator wait --for=condition=available --timeout=600s deployment/istio-operator
 
+echo "Installing istio Controlplane"
 kubectl apply -f istio.yml
+sleep 20 # needed to let the operator pick up the configuration
+kubectl -n istio-system wait --for=condition=available --timeout=600s deployment/istiod
 
-# install prometheus
+echo "Installing prometheus"
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/prometheus.yaml || :
 
-sleep 5
-
-# install kiali 1.26 (relatively latest)
+# as of 10 november this is kiali 1.26 (relatively latest)
+echo "Installing kiali"
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/kiali.yaml || :
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/kiali.yaml || :
-
-# wait for kiali to be running
-while ! kubectl wait --for=condition=available --timeout=600s deployment/kiali -n istio-system; do sleep 1; done
 
 # patch
 kubectl -n istio-system patch svc kiali --patch '{"spec": { "type": "NodePort", "ports": [ { "name": "http", "nodePort": 30123, "port": 20001, "protocol": "TCP", "targetPort": 20001 }, { "name": "http-metrics", "nodePort": 30333, "port": 9090, "protocol": "TCP", "targetPort": 9090 } ] } }'
 
-sleep 5
-
-# Install flagger
+echo "Installing flagger"
 kubectl apply -k github.com/weaveworks/flagger//kustomize/istio
+
+# wait for everything to be available
+kubectl -n istio-system wait --for=condition=available --timeout=600s deployment/prometheus
+kubectl -n istio-system wait --for=condition=available --timeout=600s deployment/kiali
+kubectl -n istio-system wait --for=condition=available --timeout=600s deployment/flagger
 
 # enable injection on default
 kubectl label namespace default istio-injection=enabled
 
-sleep 10
+sleep 2
 
 # install flagger stuff
 kubectl apply -f ../flagger/deployment.yml
