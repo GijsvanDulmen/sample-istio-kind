@@ -9,6 +9,7 @@ spec:
       app: secure
   jwtRules:
   - issuer: "testing@secure.istio.io"
+    # JSON Web Key Set containing the public keys to verify tokens issued by the authorization server
     jwksUri: "https://raw.githubusercontent.com/istio/istio/release-1.7/security/tools/jwt/samples/jwks.json"
 ---
 apiVersion: security.istio.io/v1beta1
