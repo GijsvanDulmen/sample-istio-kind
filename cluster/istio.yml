@@ -10,8 +10,8 @@ spec:
       mode: REGISTRY_ONLY
     accessLogFile: /dev/stdout
   components:
-    telemetry:
-      enabled: true
+    # telemetry:
+    #   enabled: true
     egressGateways:
     - name: istio-egressgateway
       enabled: true

@@ -17,11 +17,11 @@ kubectl get pods --all-namespaces
 # sleep 10
 
 # download istio if not already downloaded
-if [ ! -d "./istio-1.7.4" ] 
+if [ ! -d "./istio-1.19.0" ] 
 then
-    curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.7.4 sh -
+    curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.19.0 sh -
 fi
-export PATH=$PWD/istio-1.7.4/bin:$PATH
+export PATH=$PWD/istio-1.19.0/bin:$PATH
 
 kubectl create namespace istio-system
 kubectl apply -f kiali-secret.yml
@@ -36,12 +36,12 @@ sleep 20 # needed to let the operator pick up the configuration
 kubectl -n istio-system wait --for=condition=available --timeout=600s deployment/istiod
 
 echo "Installing prometheus"
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.7/samples/addons/prometheus.yaml || :
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/prometheus.yaml || :
 
 # as of 10 november this is kiali 1.26 (relatively latest)
 echo "Installing kiali"
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/kiali.yaml || :
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.8/samples/addons/kiali.yaml || :
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml || :
+# kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.19/samples/addons/kiali.yaml || :
 
 # patch
 kubectl -n istio-system patch svc kiali --patch '{"spec": { "type": "NodePort", "ports": [ { "name": "http", "nodePort": 30123, "port": 20001, "protocol": "TCP", "targetPort": 20001 }, { "name": "http-metrics", "nodePort": 30333, "port": 9090, "protocol": "TCP", "targetPort": 9090 } ] } }'
