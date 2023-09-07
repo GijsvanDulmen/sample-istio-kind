@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+ name: allow-ingress-gw-api-echo
+ namespace: default
+spec:
+#  selector:
+#    matchLabels:
+#      app: gw-api-echo
+ action: ALLOW
+ rules:
+ - from:
+   - source:
+       namespaces: ["istio-system", "kube-system", "default"]

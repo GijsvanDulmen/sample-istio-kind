@@ -1,0 +1,12 @@
+bases:
+- ../../base
+# nameSuffix: -v1
+namespace: default
+# commonLabels:
+#   version: v1
+#   app: gw-api-echo
+# resources:
+# - gateway.yml
+# - gw-service.yaml
+# - httproute.yml
+# - policy.yml

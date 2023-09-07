@@ -1,0 +1,7 @@
+resources:
+- deployment.yaml
+- service.yaml
+- gateway.yml
+- gw-service.yaml
+- httproute.yml
+# - policy.yml
